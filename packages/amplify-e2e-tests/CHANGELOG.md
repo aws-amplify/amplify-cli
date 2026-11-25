@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.20...amplify-e2e-tests@4.11.21) (2026-11-25)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 ## [4.11.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@4.11.19...amplify-e2e-tests@4.11.20) (2026-11-10)
 
 

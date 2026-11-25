@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.47](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.46...@aws-amplify/amplify-category-hosting@3.5.47) (2026-11-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-hosting
+
+
+
+
+
 ## [3.5.46](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-hosting@3.5.45...@aws-amplify/amplify-category-hosting@3.5.46) (2026-05-14)
 
 **Note:** Version bump only for package @aws-amplify/amplify-category-hosting

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.8.3...@aws-amplify/amplify-category-function@5.8.4) (2026-11-25)
+
+**Note:** Version bump only for package @aws-amplify/amplify-category-function
+
+
+
+
+
 ## [5.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-category-function@5.8.2...@aws-amplify/amplify-category-function@5.8.3) (2026-06-25)
 
 
