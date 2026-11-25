@@ -2,7 +2,7 @@ import { $TSContext, IAmplifyResource } from '@aws-amplify/amplify-cli-core';
 import { printer } from '@aws-amplify/amplify-prompts';
 import { generateDependentResourcesType } from '@aws-amplify/amplify-category-custom';
 /**
- * Command to transform CFN with overrides
+ * Command to transform CFN with overrides and report successful completion
  */
 export const run = async (context: $TSContext): Promise<void> => {
   const categoryName = context?.input?.subCommands?.[0];
@@ -33,6 +33,7 @@ export const run = async (context: $TSContext): Promise<void> => {
         resource,
       ]);
     }
+    printer.success('Successfully built resources');
   } catch (err) {
     printer.error(err.stack);
     printer.error('There was an error building the resource');
