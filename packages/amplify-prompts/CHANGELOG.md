@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.8-rc.4e494cd18bde942.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.8.7...@aws-amplify/amplify-prompts@2.8.8-rc.4e494cd18bde942.0) (2026-11-25)
+
+
+### Reverts
+
+* Revert "refactor: amplify-category-notifications aws sdk v3 migration (#14271)" (#14285) ([510560d](https://github.com/aws-amplify/amplify-cli/commit/510560decb0735a0e8633aadfa6c23fae376dfe1)), closes [#14271](https://github.com/aws-amplify/amplify-cli/issues/14271) [#14285](https://github.com/aws-amplify/amplify-cli/issues/14285)
+
+
+
+
+
 ## [2.8.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-prompts@2.8.6...@aws-amplify/amplify-prompts@2.8.7) (2025-07-01)
 
 

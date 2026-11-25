@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.19-rc.4e494cd18bde942.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.18...amplify-velocity-template@1.4.19-rc.4e494cd18bde942.0) (2026-11-25)
+
+
+### Bug Fixes
+
+* **amplify-velocity-template:** handle non-string property keys consistently ([#15008](https://github.com/aws-amplify/amplify-cli/issues/15008)) ([426372b](https://github.com/aws-amplify/amplify-cli/commit/426372be5ee67ee9d57dec95c6dd7c8ee5e18008))
+
+
+
+
+
 ## [1.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.17...amplify-velocity-template@1.4.18) (2026-11-10)
 
 
