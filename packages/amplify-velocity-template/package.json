@@ -1,6 +1,6 @@
 {
   "name": "amplify-velocity-template",
-  "version": "1.4.18",
+  "version": "1.4.19",
   "description": "Velocity Template Language(VTL) for JavaScript",
   "repository": {
     "type": "git",

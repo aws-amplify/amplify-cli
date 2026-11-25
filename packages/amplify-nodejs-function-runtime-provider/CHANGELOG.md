@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.35](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.5.34...amplify-nodejs-function-runtime-provider@2.5.35) (2026-11-25)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
 ## [2.5.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@2.5.33...amplify-nodejs-function-runtime-provider@2.5.34) (2026-05-14)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

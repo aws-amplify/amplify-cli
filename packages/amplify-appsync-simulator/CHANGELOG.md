@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.16.21...@aws-amplify/amplify-appsync-simulator@2.16.22) (2026-11-25)
+
+
+### Bug Fixes
+
+* **amplify-velocity-template:** handle non-string property keys consistently ([#15008](https://github.com/aws-amplify/amplify-cli/issues/15008)) ([426372b](https://github.com/aws-amplify/amplify-cli/commit/426372be5ee67ee9d57dec95c6dd7c8ee5e18008))
+
+
+
+
+
 ## [2.16.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/amplify-appsync-simulator@2.16.20...@aws-amplify/amplify-appsync-simulator@2.16.21) (2026-11-10)
 
 **Note:** Version bump only for package @aws-amplify/amplify-appsync-simulator
