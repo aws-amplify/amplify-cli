@@ -358,7 +358,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   if (cognitoResource.output.HostedUIDomain) {
     // eslint-disable-next-line spellcheck/spell-checker
-    domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
+    domain =
+      cognitoResource.output.HostedUICustomDomain || `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
   }
   if (cognitoResource.output.OAuthMetadata) {
     const oAuthMetadata = JSON.parse(cognitoResource.output.OAuthMetadata);
